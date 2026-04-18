@@ -3,6 +3,7 @@ import { Panel, PanelHeader, Group, Div, NavIdProps } from '@vkontakte/vkui';
 import { MALE_PADAS, FEMALE_PADAS } from '../data/padas';
 import { calculateFullKuta, FullKutaResult } from '../utils/fullKutaCalculator';
 import { WheelPicker } from '../components/WheelPicker';
+import { CompactKeypad } from '../components/CompactKeypad';
 
 export interface HomeProps extends NavIdProps {}
 
@@ -23,6 +24,8 @@ export const Home: FC<HomeProps> = ({ id }) => {
   const [fullResult, setFullResult] = useState<FullKutaResult | null>(null);
   const [maleInput, setMaleInput] = useState('');
   const [femaleInput, setFemaleInput] = useState('');
+  const [keypadVisible, setKeypadVisible] = useState(false);
+  const [activeGender, setActiveGender] = useState<'male' | 'female' | null>(null);
   
   const malePada = useMemo(() => MALE_PADAS.find(p => p.globalId === malePadaId) || MALE_PADAS[0], [malePadaId]);
   const femalePada = useMemo(() => FEMALE_PADAS.find(p => p.globalId === femalePadaId) || FEMALE_PADAS[0], [femalePadaId]);
@@ -45,40 +48,30 @@ export const Home: FC<HomeProps> = ({ id }) => {
       if (num > 108) num = 108;
       if (num >= 1) g === 'male' ? setMalePadaId(num) : setFemalePadaId(num);
       g === 'male' ? setMaleInput('') : setFemaleInput('');
+      closeKeypad(); // закрыть после подтверждения
     } else {
       const cur = g === 'male' ? maleInput : femaleInput;
       if (cur.length < 3) g === 'male' ? setMaleInput(cur + k) : setFemaleInput(cur + k);
     }
   };
 
-  const renderKeypad = (g: 'male' | 'female') => {
-    const cur = g === 'male' ? maleInput : femaleInput;
-    const color = g === 'male' ? '#4bb34b' : '#ff5c5c';
-    return (
-      <div style={{display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:4, marginTop:8, padding:'0 8px'}}>
-        {[['1','2','3'],['4','5','6'],['7','8','9'],['del','0','ok']].map((row,ri) => 
-          row.map((k,ck) => (
-            <button key={`${ri}-${ck}`} onClick={() => handleKey(k,g)}
-              style={{height:28, fontSize:k==='ok'||k==='del'?10:14, fontWeight:600,
-                background:k==='ok'?color:k==='del'?'#666':'var(--background_secondary)',
-                color:k==='del'?'#fff':'var(--text_primary)',border:'none',borderRadius:4,cursor:'pointer',touchAction:'manipulation'}}>
-              {k==='ok'?'ОК':k==='del'?'⌫':k}
-            </button>
-          ))
-        )}
-        <div style={{gridColumn:'1/-1',textAlign:'center',fontSize:14,color,fontWeight:600,letterSpacing:2,marginTop:2}}>
-          {cur.padStart(3,'_').slice(0,3)}
-        </div>
-      </div>
-    );
+  const openKeypad = (gender: 'male' | 'female') => {
+    setActiveGender(gender);
+    setKeypadVisible(true);
   };
+
+  const closeKeypad = () => {
+    setKeypadVisible(false);
+    setActiveGender(null);
+  };
+
 
   return (
     <Panel id={id}>
       <PanelHeader>Ведическая система КУТ</PanelHeader>
       <Group><Div>
         <div style={{display:'flex', gap:8, padding:'8px 0'}}>
-          <div style={{flex:1, minWidth:110}}><WheelPicker items={MALE_PADAS} selectedId={malePadaId} onSelect={setMalePadaId} label="👨 Мужчина" color="#4bb34b" />{renderKeypad('male')}</div>
+          <div style={{flex:1, minWidth:110}}><WheelPicker items={MALE_PADAS} selectedId={malePadaId} onSelect={setMalePadaId} onCenterClick={() => openKeypad('male')} label="👨 Мужчина" color="#4bb34b" /></div>
           <div style={{flex:0.8, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', minWidth:90}}>
             <div style={{textAlign:'center', padding:'12px', borderRadius:'14px', width:'100%'}}>
               {fullResult && (
@@ -96,7 +89,7 @@ export const Home: FC<HomeProps> = ({ id }) => {
               )}
             </div>
           </div>
-          <div style={{flex:1, minWidth:110}}><WheelPicker items={FEMALE_PADAS} selectedId={femalePadaId} onSelect={setFemalePadaId} label="👩 Женщина" color="#ff5c5c" />{renderKeypad('female')}</div>
+          <div style={{flex:1, minWidth:110}}><WheelPicker items={FEMALE_PADAS} selectedId={femalePadaId} onSelect={setFemalePadaId} onCenterClick={() => openKeypad('female')} label="👩 Женщина" color="#ff5c5c" /></div>
         </div>
       </Div></Group>
 
@@ -118,6 +111,15 @@ export const Home: FC<HomeProps> = ({ id }) => {
           );
         })}
       </Div></Group>)}
+
+      {keypadVisible && activeGender && (
+        <CompactKeypad
+          gender={activeGender}
+          currentInput={activeGender === 'male' ? maleInput : femaleInput}
+          onKeyPress={(key) => handleKey(key, activeGender)}
+          onClose={closeKeypad}
+        />
+      )}
     </Panel>
   );
 };

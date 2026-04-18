@@ -7,6 +7,7 @@ interface WheelPickerProps {
   onSelect: (id: number) => void;
   label?: string;
   color?: string;
+  onCenterClick?: () => void;
 }
 
 const ITEM_H = 52;
@@ -17,6 +18,7 @@ export const WheelPicker: FC<WheelPickerProps> = ({
   onSelect,
   label,
   color = '#4bb34b',
+  onCenterClick,
 }) => {
   const idx = items.findIndex(x => x.globalId === selectedId);
   const current = idx >= 0 ? idx : 0;
@@ -68,7 +70,14 @@ export const WheelPicker: FC<WheelPickerProps> = ({
           return (
             <div
               key={`${item.globalId}-${offset}`}
-              onClick={() => onSelect(item.globalId)}
+              onClick={(e) => {
+                if (centered && onCenterClick) {
+                  e.stopPropagation();
+                  onCenterClick();
+                } else {
+                  onSelect(item.globalId);
+                }
+              }}
               style={{
                 position: 'absolute',
                 top: '50%',

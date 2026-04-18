@@ -143,3 +143,7 @@ screenshots/*.jpg
 
 # Plans (optional)
 plans/*.md
+
+vk-hosting-config.json
+
+build.zip
