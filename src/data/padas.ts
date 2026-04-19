@@ -73,3 +73,21 @@ export function getPadasByNakshatra(nakshatraId: number, gender: Gender): Pada[]
   const padas = gender === 'male' ? MALE_PADAS : FEMALE_PADAS;
   return padas.filter(p => p.nakshatraId === nakshatraId);
 }
+
+/**
+ * Генерирует случайный globalId для пады в диапазоне от 1 до 108
+ */
+export function getRandomPadaId(): number {
+  return Math.floor(Math.random() * 108) + 1;
+}
+
+/**
+ * Генерирует случайные пады для мужчины и женщины
+ * @returns Объект с malePadaId и femalePadaId
+ */
+export function getRandomPadaIds(): { malePadaId: number; femalePadaId: number } {
+  return {
+    malePadaId: getRandomPadaId(),
+    femalePadaId: getRandomPadaId()
+  };
+}

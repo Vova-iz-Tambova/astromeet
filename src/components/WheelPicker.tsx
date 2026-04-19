@@ -23,7 +23,7 @@ export const WheelPicker: FC<WheelPickerProps> = ({
   const idx = items.findIndex(x => x.globalId === selectedId);
   const current = idx >= 0 ? idx : 0;
   const count = items.length;
-  const mod = (i: number) => ((i % count) + count) % count;
+  const mod = useCallback((i: number) => ((i % count) + count) % count, [count]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 

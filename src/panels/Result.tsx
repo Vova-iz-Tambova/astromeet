@@ -5,7 +5,7 @@ import {
   Header,
   Button,
   Group,
-  Div,
+  Box,
   Cell,
   Avatar,
   Progress,
@@ -15,7 +15,7 @@ import {
 import { useRouteNavigator, useParams } from '@vkontakte/vk-mini-apps-router';
 import { MALE_PADAS, FEMALE_PADAS } from '../data/padas';
 import { calculateKuta, getDiffDescription } from '../utils/kutaCalculator';
-import { calculateFullKuta } from '../utils/fullKutaCalculator';
+import { calculateFullKuta } from '../kuta';
 
 export interface ResultProps extends NavIdProps {}
 
@@ -57,7 +57,7 @@ export const Result: FC<ResultProps> = ({ id }) => {
       <PanelHeader>Результат совместимости</PanelHeader>
 
       <Group header={<Header size="s">👨‍👩‍👧‍👦 Пара</Header>}>
-        <Div>
+        <Box>
           <Cell
             before={<Avatar size={48} style={{ backgroundColor: '#4bb34b' }}>👨</Avatar>}
             subtitle={`${malePada.nakshatraName}, пада ${malePada.padaNumber}`}
@@ -70,11 +70,11 @@ export const Result: FC<ResultProps> = ({ id }) => {
           >
             {femalePada.code}
           </Cell>
-        </Div>
+        </Box>
       </Group>
 
       <Group header={<Header size="s">📊 Полная система КУТ (36 баллов)</Header>}>
-        <Div style={{ textAlign: 'center' }}>
+        <Box style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 48, fontWeight: 'bold', color: getColorByPercentage((fullResult.totalScore / 36) * 100) }}>
             {fullResult.totalScore}/36
           </div>
@@ -88,11 +88,11 @@ export const Result: FC<ResultProps> = ({ id }) => {
           <div style={{ fontSize: 16, color: 'var(--text_secondary)' }}>
             {fullResult.recommendation}
           </div>
-        </Div>
+        </Box>
       </Group>
 
       <Group header={<Header size="s">📈 Детали по критериям</Header>}>
-        <Div>
+        <Box>
           {fullResult.criteria.map(criterion => (
             <SimpleCell
               key={criterion.name}
@@ -104,11 +104,11 @@ export const Result: FC<ResultProps> = ({ id }) => {
               {criterion.name}
             </SimpleCell>
           ))}
-        </Div>
+        </Box>
       </Group>
 
       <Group header={<Header size="s">📊 Упрощенная совместимость (108 пад)</Header>}>
-        <Div style={{ textAlign: 'center' }}>
+        <Box style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 48, fontWeight: 'bold', color: getColorByPercentage(simpleResult.percentage) }}>
             {simpleResult.percentage}%
           </div>
@@ -122,19 +122,19 @@ export const Result: FC<ResultProps> = ({ id }) => {
           <div style={{ fontSize: 16, color: 'var(--text_secondary)' }}>
             Разница накшатр: {getDiffDescription(simpleResult.diff)}
           </div>
-        </Div>
+        </Box>
       </Group>
 
       <Group header={<Header size="s">📖 Описание</Header>}>
-        <Div>
+        <Box>
           <p style={{ fontSize: 16, lineHeight: 1.5 }}>
             {simpleResult.description}
           </p>
-        </Div>
+        </Box>
       </Group>
 
       <Group header={<Header size="s">💡 Рекомендации</Header>}>
-        <Div>
+        <Box>
           <p style={{ fontSize: 16, lineHeight: 1.5 }}>
             {simpleResult.recommendations}
           </p>
@@ -144,11 +144,11 @@ export const Result: FC<ResultProps> = ({ id }) => {
             <li>Не избегайте диалога</li>
             <li>Проявляйте уважение к различиям</li>
           </ul>
-        </Div>
+        </Box>
       </Group>
 
       <Group header={<Header size="s">🔍 Детали расчета (упрощенный)</Header>}>
-        <Div>
+        <Box>
           <Cell subtitle="Мужская пада">
             {malePada.code} ({malePada.nakshatraName}, пада {malePada.padaNumber})
           </Cell>
@@ -167,11 +167,11 @@ export const Result: FC<ResultProps> = ({ id }) => {
               ? '-20% (пады различаются на 3)'
               : '0% (пады различаются на 1)'}
           </Cell>
-        </Div>
+        </Box>
       </Group>
 
       <Group>
-        <Div>
+        <Box>
           <Button
             stretched
             size="l"
@@ -190,7 +190,7 @@ export const Result: FC<ResultProps> = ({ id }) => {
           >
             НАЗАД
           </Button>
-        </Div>
+        </Box>
       </Group>
     </Panel>
   );

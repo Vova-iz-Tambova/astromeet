@@ -1,7 +1,7 @@
 import { FC, useState, useEffect, useMemo } from 'react';
-import { Panel, PanelHeader, Group, Div, NavIdProps } from '@vkontakte/vkui';
-import { MALE_PADAS, FEMALE_PADAS } from '../data/padas';
-import { calculateFullKuta, FullKutaResult } from '../utils/fullKutaCalculator';
+import { Panel, PanelHeader, Group, Box, NavIdProps } from '@vkontakte/vkui';
+import { MALE_PADAS, FEMALE_PADAS, getRandomPadaIds } from '../data/padas';
+import { calculateFullKuta, FullKutaResult } from '../kuta';
 import { WheelPicker } from '../components/WheelPicker';
 import { CompactKeypad } from '../components/CompactKeypad';
 
@@ -29,6 +29,13 @@ export const Home: FC<HomeProps> = ({ id }) => {
   
   const malePada = useMemo(() => MALE_PADAS.find(p => p.globalId === malePadaId) || MALE_PADAS[0], [malePadaId]);
   const femalePada = useMemo(() => FEMALE_PADAS.find(p => p.globalId === femalePadaId) || FEMALE_PADAS[0], [femalePadaId]);
+
+  // Установка случайных пад при монтировании компонента
+  useEffect(() => {
+    const randomIds = getRandomPadaIds();
+    setMalePadaId(randomIds.malePadaId);
+    setFemalePadaId(randomIds.femalePadaId);
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -69,7 +76,7 @@ export const Home: FC<HomeProps> = ({ id }) => {
   return (
     <Panel id={id}>
       <PanelHeader>Ведическая система КУТ</PanelHeader>
-      <Group><Div>
+      <Group><Box>
         <div style={{display:'flex', gap:8, padding:'8px 0'}}>
           <div style={{flex:1, minWidth:110}}><WheelPicker items={MALE_PADAS} selectedId={malePadaId} onSelect={setMalePadaId} onCenterClick={() => openKeypad('male')} label="👨 Мужчина" color="#4bb34b" /></div>
           <div style={{flex:0.8, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', minWidth:90}}>
@@ -89,11 +96,11 @@ export const Home: FC<HomeProps> = ({ id }) => {
               )}
             </div>
           </div>
-          <div style={{flex:1, minWidth:110}}><WheelPicker items={FEMALE_PADAS} selectedId={femalePadaId} onSelect={setFemalePadaId} onCenterClick={() => openKeypad('female')} label="👩 Женщина" color="#ff5c5c" /></div>
+          <div style={{flex:1, minWidth:110}}><WheelPicker items={FEMALE_PADAS} selectedId={femalePadaId} onSelect={setFemalePadaId} onCenterClick={() => openKeypad('female')} label="👩 Девушка" color="#ff5c5c" /></div>
         </div>
-      </Div></Group>
+      </Box></Group>
 
-      {fullResult && (<Group><Div style={{padding:6}}>
+      {fullResult && (<Group><Box style={{padding:6}}>
         {fullResult.criteria.map(c => {
           const info = PARAM_INFO[c.name];
           const maleVal = malePada[info.maleKey as keyof typeof malePada];
@@ -104,13 +111,13 @@ export const Home: FC<HomeProps> = ({ id }) => {
                 <div style={{fontWeight:700, fontSize:20}}>{info?.title || c.name}</div>
                 <div style={{fontWeight:'bold', fontSize:24, color: c.favorable?'#4bb34b':'#ff5c5c'}}>{c.score}/{c.maxScore} {c.favorable?'✓':'✗'}</div>
               </div>
-              <div style={{fontSize:16, fontWeight:600, marginBottom:10}}><span style={{color:'#4bb34b'}}>М:</span> {c.name==='Бхаккут'?getRashiName(maleVal as number):maleVal} <span style={{margin:'0 8px', opacity:0.5}}>|</span> <span style={{color:'#ff5c5c'}}>Ж:</span> {c.name==='Бхаккут'?getRashiName(femaleVal as number):femaleVal}</div>
+              <div style={{fontSize:16, fontWeight:600, marginBottom:10}}><span style={{color:'#4bb34b'}}>М:</span> {c.name==='Бхаккут'?getRashiName(maleVal as number):maleVal} <span style={{margin:'0 8px', opacity:0.5}}>|</span> <span style={{color:'#ff5c5c'}}>Д:</span> {c.name==='Бхаккут'?getRashiName(femaleVal as number):femaleVal}</div>
               <div style={{fontSize:14, lineHeight:1.5}}>{info?.full}</div>
               <div style={{fontSize:14, marginTop:10, padding:8, backgroundColor: c.favorable?'rgba(75,179,75,0.1)':'rgba(255,92,92,0.1)', borderRadius:6}}><strong>Итог:</strong> {c.favorable?'Благоприятно':'Неблагоприятно'}. {c.benefits} {c.challenges}</div>
             </div>
           );
         })}
-      </Div></Group>)}
+      </Box></Group>)}
 
       {keypadVisible && activeGender && (
         <CompactKeypad
